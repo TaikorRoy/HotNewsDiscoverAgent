@@ -15,7 +15,7 @@ def match_topic(topic_pos_buffer, topic_pos):
     for pos in topic_pos_buffer:
         pos_list = pos.split(" ")
         pos_set = set(pos_list)
-        if len(pos_set & topic_pos_set) > 2:
+        if len(pos_set & topic_pos_set) >= 2:
             match_result = True
             break
         else:
@@ -27,9 +27,9 @@ def select_hot_news(news_pool_file_path, obsolete_pool_file_path, kw_pool_file_p
     volume_of_selection = 10
     ct = int(time.time())
 
-    news_pool_dictionary = pool_lib.load_pool(news_pool_file_path)
-    obsolete_pool_dictionary = pool_lib.load_pool(obsolete_pool_file_path)
-    kw_pool_dictionary = pool_lib.load_pool(kw_pool_file_path)
+    news_pool_dictionary = pool_lib.load_pool_file(news_pool_file_path)
+    obsolete_pool_dictionary = pool_lib.load_pool_file(obsolete_pool_file_path)
+    kw_pool_dictionary = pool_lib.load_pool_file(kw_pool_file_path)
 
     news_pool_title_set = set(news_pool_dictionary.keys())
     query_result = news_crawler.query_search_result_batch(news_pool_title_set)
@@ -41,15 +41,12 @@ def select_hot_news(news_pool_file_path, obsolete_pool_file_path, kw_pool_file_p
 
     topic_candidates_titles_and_kws = [[x[0], extract_news_kws_lib.extract_news_kws(x[0])] for x in topic_candidates]
 
-    topic_pos_buffers = list()
     topics_picked = list()
-
     counter = 0
     for ele in topic_candidates_titles_and_kws:
         if counter < volume_of_selection:
-            if not match_topic(topic_pos_buffers, ele[1]):
+            if not match_topic(kw_pool_dictionary.keys(), ele[1]):
                 topics_picked.append(ele)
-                topic_pos_buffers.append(ele[1])
                 kw_pool_dictionary[ele[1]] = ct
                 counter += 1
 
