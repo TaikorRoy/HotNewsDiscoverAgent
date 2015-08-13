@@ -7,8 +7,8 @@ import time
 
 
 def extract_news(_body, _Engine):
-    pattern = {"Sougou": r'title="(.+?)"', "Baidu": r'target="_blank">(.+?)</a>'}
-    _news = re.findall(pattern[_Engine], _body)
+    pattern = {"Sougou": r'<a .+?(?:business_headline|business_newslist).+? title="(.+?)"', "Baidu": r'<div class="middle-focus-news">.+?target="_blank">(.+?)</a>'}
+    _news = re.findall(pattern[_Engine], _body, flags=re.DOTALL)
     news_buffer = list()
     for item in _news:
         if len(item) > 6 and item.find("<") == -1:
