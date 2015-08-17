@@ -7,8 +7,18 @@ import time
 
 
 def extract_news(_body, _Engine):
-    pattern = {"Sougou": r'<a .+?(?:business_headline|business_newslist).+? title="(.+?)"', "Baidu": r'<div class="middle-focus-news">.+?target="_blank">(.+?)</a>'}
-    _news = re.findall(pattern[_Engine], _body, flags=re.DOTALL)
+    if _Engine == "Sougou":
+        pattern = r'<a .+?(?:business_headline|business_newslist).+? title="(.+?)"'
+        _news = re.findall(pattern, _body, flags=re.DOTALL)
+    elif _Engine == "Baidu":
+        _news = list()
+        div_pattern = r'<div class="middle-focus-news">(.+?)</div>'
+        title_pattern = r'target="_blank">(.+?)</a>'
+        div_match = re.findall(div_pattern, _body, flags=re.DOTALL)
+        for div_value in div_match:
+            title_match = re.findall(title_pattern, div_value, flags=re.DOTALL)
+            _news = _news + title_match
+
     news_buffer = list()
     for item in _news:
         if len(item) > 6 and item.find("<") == -1:
@@ -19,10 +29,16 @@ def extract_news(_body, _Engine):
 def fetch_news(_Engine):
     URL = {"Sougou": r"http://news.sogou.com/business.shtml", "Baidu": r"http://finance.baidu.com/"}
     r = requests.get(URL[_Engine])
-    if _Engine is "Baidu":
-        r.encoding = "gbk"
-    html_body = r.text
-    _news = extract_news(html_body, _Engine)
+    while True:
+        if r.status_code == requests.codes.ok:
+            if _Engine is "Baidu":
+                r.encoding = "gbk"
+            html_body = r.text
+            _news = extract_news(html_body, _Engine)
+            break
+        else:
+            time.sleep(5)  # if request failed, then program sleep 5 s and retry
+            r = requests.get(URL[_Engine])
     return _news
 
 
@@ -55,17 +71,17 @@ def query_search_result(_news_title):
              'ct': '1',
              'rn': '20',
              'ie': 'utf-8'}
-    while True:
+    while True:   # Either request failed or succeed, the crawler sleep for 0.1 s, loop breaks when crawler succeed
         r = requests.get(url, params=paras)
         print(r.url)
         html_body = r.text
         pattern = r'<span class="nums">.+?([0-9]*?,?[0-9]*?).</span>'
         match = re.findall(pattern, html_body)
-        if len(match) > 0:
+        if len(match) > 0:   # pattern found, request succeed !
             num = int(match[0].replace(",", ""))
             time.sleep(0.1)
             break
-        else:
+        else:  # pattern not found, request failed, crawler retry this request
             print("Error Page Returned")
             time.sleep(0.1)
     return num

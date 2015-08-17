@@ -29,7 +29,7 @@ def update_pool_file(pool, file_path):
 
 
 def update_news_pool(file_path):
-    Engine = {"Baidu", "Sougou"}
+    Engine = {"Baidu"}
     news_pool_file_path = file_path
 
     news_pool = load_pool_file(news_pool_file_path)
