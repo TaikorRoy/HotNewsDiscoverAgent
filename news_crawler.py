@@ -15,14 +15,19 @@ def extract_news(_body, _Engine):
         div_pattern = r'<div class="middle-focus-news">(.+?)</div>'
         title_pattern = r'target="_blank">(.+?)</a>'
         div_match = re.findall(div_pattern, _body, flags=re.DOTALL)
+        section_selected = [0, 1]
+        i = 0
         for div_value in div_match:
-            title_match = re.findall(title_pattern, div_value, flags=re.DOTALL)
-            _news = _news + title_match
+            if i in section_selected:
+                title_match = re.findall(title_pattern, div_value, flags=re.DOTALL)
+                _news = _news + title_match
+            i += 1
 
     news_buffer = list()
     for item in _news:
         if len(item) > 6 and item.find("<") == -1:
             news_buffer.append(item)
+    news_buffer[0] = "!!!" + news_buffer[0]  # marking first news (bold)
     return news_buffer
 
 
@@ -79,6 +84,8 @@ def query_search_result(_news_title):
         match = re.findall(pattern, html_body)
         if len(match) > 0:   # pattern found, request succeed !
             num = int(match[0].replace(",", ""))
+            if _news_title.find("!!!") > 0:
+                num += 999999999999
             time.sleep(0.1)
             break
         else:  # pattern not found, request failed, crawler retry this request

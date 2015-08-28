@@ -35,7 +35,7 @@ def update_news_pool(file_path):
     news_pool = load_pool_file(news_pool_file_path)
     ct = int(time.time())
     ot_pool = list()
-    ot_threshold = 2*24*3600
+    ot_threshold = 5*3600
     obsolete_receive_queue = list()
     for news in news_pool.keys():
         if (ct - news_pool[news]) > ot_threshold:

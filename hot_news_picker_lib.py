@@ -7,6 +7,24 @@ import extract_news_kws_lib
 import time
 
 
+def rearrange(eles):
+    def bog(str):
+        return set(str.split(" "))
+
+    eles = set(eles)
+    groups = list()
+    list_length = len(eles)
+    for ele in eles:
+        if len(bog(eles[i][1]) & bog(eles[i+j][1])) >= 1:
+            buffer = list()
+            buffer.append(eles[i])
+            buffer.append(eles[i+j])
+            groups.append(buffer)
+            eles[i] = None  # remove similar items but remains the seat
+            eles[i+j] = None
+    return eles
+
+
 def match_topic(topic_pos_buffer, topic_pos):
     topic_pos_list = topic_pos.split(" ")
     topic_pos_set = set(topic_pos_list)
@@ -57,9 +75,18 @@ def select_hot_news(news_pool_file_path, obsolete_pool_file_path, kw_pool_file_p
         except:
             print("Pop Dict Key Error")
 
+    # topics_picked = rearrange(topics_picked)
+
     pool_lib.update_pool_file(news_pool_dictionary, news_pool_file_path)
     pool_lib.update_pool_file(obsolete_pool_dictionary, obsolete_pool_file_path)
     pool_lib.update_pool_file(kw_pool_dictionary, kw_pool_file_path)
 
     return topics_picked
+
+
+if __name__ == "__main__":
+    elses = [['日本韩国', '日本 韩国'], ['新加坡中国', '新加坡 中国'], ['不不不', '我 事'], ['不不不', '我 事'], ['不不不', '我 事'], ['不不不', '我 事'], ['不不不', '我 事'], ['不不不', '我 事'], ['不不不', '我 事'], ['不不不', '我 事']]
+    print(elses)
+    a = rearrange(elses)
+    print(a)
 

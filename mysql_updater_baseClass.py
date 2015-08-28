@@ -34,6 +34,8 @@ class MySQLUpdater(object):
         return formated_time, int(time.time())
 
     def query(self, topic_title_and_kw):
+        topic_title_and_kw[1] = topic_title_and_kw[1].replace(" ", "+")
+        topic_title_and_kw[0] = topic_title_and_kw[0].strip("!!!")
         formated_time, time_stamp = self.get_formated_time()
         id = self.counter + time_stamp
         sql = r"INSERT INTO HeatTopic (HeatTopicID, HeatTopicName, IssueID, QueryRule, CreateTime) VALUES ('%s', '%s', '%s', '%s', '%s')" % (id, topic_title_and_kw[0], "Reader", topic_title_and_kw[1], formated_time)
