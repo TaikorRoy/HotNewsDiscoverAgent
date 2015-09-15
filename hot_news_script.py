@@ -77,7 +77,7 @@ if __name__ == "__main__":
     news_pool_file_path = r"news_pool_cache"
     obsolete_pool_file_path = r"obsolete_pool_cache"
     kw_pool_file_path = r"kw_pool_cache"
-    times_to_update = [{"hour": 9, "min": 37}, {"hour": 16, "min": 35}]
+    times_to_update = [{"hour": 9, "min": 35}, {"hour": 16, "min": 35}]
     pool_update_freq = [{"hour": -1, "min": 0}]
     agent = HotNewsDiscoverAgent(news_pool_file_path, obsolete_pool_file_path, kw_pool_file_path, times_to_update, pool_update_freq)
     agent.run_batch()

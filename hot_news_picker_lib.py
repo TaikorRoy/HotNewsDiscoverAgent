@@ -8,6 +8,7 @@ import time
 
 
 def rearrange(eles):
+    # TODO: need further development
     def bog(str):
         return set(str.split(" "))
 
